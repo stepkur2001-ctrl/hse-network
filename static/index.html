@@ -9,7 +9,9 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
 
-    .header { background: #5B2D8E; padding: 16px; color: white; }
+    .header { background: #5B2D8E; padding: 16px; color: white; display: flex; align-items: center; gap: 10px; }
+    .header-back { background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 0 4px; display: none; }
+    .header-titles { flex: 1; }
     .header h1 { font-size: 20px; font-weight: 600; }
     .header p { font-size: 13px; opacity: 0.75; margin-top: 2px; }
 
@@ -30,22 +32,38 @@
     .results-count { font-size: 12px; color: #aaa; padding: 8px 12px 0; }
 
     .cards { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-    .card { background: white; border-radius: 12px; border: 1px solid #eee; padding: 14px; }
-    .card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .avatar { width: 42px; height: 42px; border-radius: 50%; background: #EDE7F6; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; color: #5B2D8E; flex-shrink: 0; }
+    .card { background: white; border-radius: 12px; border: 1px solid #eee; padding: 14px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+    .card:active { background: #fafafa; }
+    .avatar { width: 44px; height: 44px; border-radius: 50%; background: #EDE7F6; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 15px; color: #5B2D8E; flex-shrink: 0; overflow: hidden; }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .card-info { flex: 1; min-width: 0; }
     .card-name { font-weight: 600; font-size: 14px; }
     .card-sub { font-size: 12px; color: #888; margin-top: 2px; }
-    .badge { margin-left: auto; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+    .card-skills-preview { font-size: 11px; color: #aaa; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-desc-preview { font-size: 12px; color: #777; margin-top: 4px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+    .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
     .badge.hackathon { background: #EDE7F6; color: #5B2D8E; }
     .badge.startup { background: #E8F5E9; color: #2E7D32; }
     .badge.case { background: #FFF3E0; color: #E65100; }
-    .skills { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-    .skill { background: #f5f5f5; color: #555; font-size: 11px; padding: 3px 9px; border-radius: 20px; }
-    .card-description { font-size: 13px; color: #555; margin-bottom: 10px; line-height: 1.4; }
-    .btn-contact { width: 100%; background: #5B2D8E; color: white; border: none; border-radius: 8px; padding: 9px; font-size: 13px; font-weight: 600; cursor: pointer; }
-    .btn-contact:active { opacity: 0.85; }
+    .chevron { font-size: 14px; color: #ccc; margin-top: 2px; }
 
     .empty { text-align: center; padding: 40px 20px; color: #aaa; font-size: 14px; }
+
+    .profile-page-cover { background: #5B2D8E; height: 100px; }
+    .profile-page-avatar-wrap { display: flex; justify-content: center; margin-top: -45px; margin-bottom: 12px; }
+    .profile-page-avatar { width: 90px; height: 90px; border-radius: 50%; background: #EDE7F6; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 28px; color: #5B2D8E; border: 4px solid white; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    .profile-page-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .profile-page-name { text-align: center; font-size: 20px; font-weight: 700; padding: 0 16px; }
+    .profile-page-sub { text-align: center; font-size: 13px; color: #888; margin-top: 4px; padding: 0 16px; }
+    .profile-page-badge { display: flex; justify-content: center; margin: 10px 0; }
+    .profile-page-section { padding: 16px; border-top: 1px solid #f0f0f0; }
+    .profile-page-section-title { font-size: 11px; color: #aaa; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .skills-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skill { background: #f5f5f5; color: #555; font-size: 12px; padding: 4px 10px; border-radius: 20px; }
+    .profile-page-description { font-size: 14px; color: #444; line-height: 1.6; }
+    .btn-contact-big { width: calc(100% - 32px); margin: 8px 16px 16px; background: #5B2D8E; color: white; border: none; border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 600; cursor: pointer; display: block; }
+    .btn-contact-big:active { opacity: 0.85; }
 
     .form-wrap { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
     .form-group label { display: block; font-size: 13px; font-weight: 500; color: #555; margin-bottom: 6px; }
@@ -55,6 +73,10 @@
     .skill-btn { padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; background: white; cursor: pointer; text-align: center; }
     .skill-btn.selected { background: #EDE7F6; border-color: #5B2D8E; color: #5B2D8E; font-weight: 500; }
     .btn-save { width: 100%; background: #5B2D8E; color: white; border: none; border-radius: 8px; padding: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 4px; }
+    .my-avatar-wrap { display: flex; align-items: center; gap: 12px; }
+    .my-avatar { width: 56px; height: 56px; border-radius: 50%; background: #EDE7F6; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 18px; color: #5B2D8E; overflow: hidden; flex-shrink: 0; }
+    .my-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .my-avatar-hint { font-size: 12px; color: #aaa; line-height: 1.4; }
 
     .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #eee; }
     .nav-item { flex: 1; padding: 10px; text-align: center; cursor: pointer; }
@@ -68,9 +90,12 @@
 </head>
 <body>
 
-<div class="header">
-  <h1>HSE Network</h1>
-  <p>Найди тиммейта для проекта</p>
+<div class="header" id="main-header">
+  <button class="header-back" id="header-back" onclick="goBack()">←</button>
+  <div class="header-titles">
+    <h1 id="header-title">HSE Network</h1>
+    <p id="header-subtitle">Найди тиммейта для проекта</p>
+  </div>
 </div>
 
 <div id="page-find" class="page active">
@@ -78,7 +103,6 @@
     <input type="text" id="search-input" placeholder="🔍 Имя или университет..." oninput="applyFilters()">
     <button class="filter-toggle" id="filter-btn" onclick="toggleFilters()">⚙️ Фильтры</button>
   </div>
-
   <div class="filters-panel" id="filters-panel">
     <div class="filter-group">
       <div class="filter-label">Тип проекта</div>
@@ -129,15 +153,22 @@
     </div>
     <button class="filters-apply" onclick="toggleFilters()">Применить ✓</button>
   </div>
-
   <div class="results-count" id="results-count"></div>
   <div class="cards" id="cards-container">
     <div class="empty">Загружаем анкеты...</div>
   </div>
 </div>
 
+<div id="page-user" class="page">
+  <div id="user-content"></div>
+</div>
+
 <div id="page-profile" class="page">
   <div class="form-wrap">
+    <div class="my-avatar-wrap">
+      <div class="my-avatar" id="my-avatar"><span id="my-avatar-initials">?</span></div>
+      <div class="my-avatar-hint">Аватарка подтягивается автоматически из Telegram</div>
+    </div>
     <div class="form-group">
       <label>Имя и фамилия</label>
       <input id="f-name" type="text" placeholder="Алексей Куликов">
@@ -183,7 +214,7 @@
     </div>
     <div class="form-group">
       <label>О себе и проекте</label>
-      <textarea id="f-description" placeholder="Расскажи о себе, своём опыте или проекте который ищешь команду..."></textarea>
+      <textarea id="f-description" placeholder="Расскажи о себе, своём опыте или проекте..."></textarea>
     </div>
     <div class="form-group">
       <label>Telegram username</label>
@@ -193,7 +224,7 @@
   </div>
 </div>
 
-<div class="bottom-nav">
+<div class="bottom-nav" id="bottom-nav">
   <div class="nav-item active" id="nav-find" onclick="showPage('find')">
     <div class="nav-icon">🔍</div>
     <div class="nav-label">Найти</div>
@@ -208,19 +239,77 @@
   const tg = window.Telegram?.WebApp;
   if (tg) tg.expand();
   const userId = tg?.initDataUnsafe?.user?.id || Math.floor(Math.random() * 100000);
+  const tgPhoto = tg?.initDataUnsafe?.user?.photo_url || null;
 
   let allUsers = [];
+  let prevPage = 'find';
   let activeFilters = { project: 'all', skill: 'all', year: 'all', university: 'all' };
 
   const avatarColors = ['#EDE7F6', '#FCE4EC', '#E3F2FD', '#E8F5E9', '#FFF3E0'];
   const textColors = ['#5B2D8E', '#C2185B', '#1565C0', '#2E7D32', '#E65100'];
 
+  function getInitials(name) {
+    return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  }
+
+  function getBadgeClass(looking) {
+    if (looking === 'Хакатон') return 'hackathon';
+    if (looking === 'Стартап') return 'startup';
+    return 'case';
+  }
+
   function showPage(name) {
+    if (name !== 'user') prevPage = name;
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('page-' + name).classList.add('active');
-    document.getElementById('nav-' + name).classList.add('active');
+    const backBtn = document.getElementById('header-back');
+    const subtitle = document.getElementById('header-subtitle');
+    if (name === 'user') {
+      backBtn.style.display = 'block';
+      subtitle.style.display = 'none';
+      document.getElementById('header-title').textContent = 'Профиль';
+      document.getElementById('bottom-nav').style.display = 'none';
+    } else {
+      backBtn.style.display = 'none';
+      subtitle.style.display = 'block';
+      document.getElementById('header-title').textContent = 'HSE Network';
+      document.getElementById('bottom-nav').style.display = 'flex';
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('nav-' + name).classList.add('active');
+    }
     if (name === 'profile') loadMyProfile();
+  }
+
+  function goBack() { showPage(prevPage); }
+
+  function openUserPage(u, colorIndex) {
+    const ci = colorIndex % avatarColors.length;
+    const initials = getInitials(u.name);
+    const avatarHtml = u.photo_url
+      ? `<img src="${u.photo_url}" alt="${initials}">`
+      : initials;
+    const skills = u.skills.split(',').map(s => `<span class="skill">${s.trim()}</span>`).join('');
+    const desc = u.description
+      ? `<div class="profile-page-section">
+           <div class="profile-page-section-title">О себе и проекте</div>
+           <div class="profile-page-description">${u.description}</div>
+         </div>` : '';
+    document.getElementById('user-content').innerHTML = `
+      <div class="profile-page-cover"></div>
+      <div class="profile-page-avatar-wrap">
+        <div class="profile-page-avatar" style="background:${avatarColors[ci]};color:${textColors[ci]}">${avatarHtml}</div>
+      </div>
+      <div class="profile-page-name">${u.name}</div>
+      <div class="profile-page-sub">${u.university ? u.university + ' · ' : ''}${u.faculty} · ${u.year} курс</div>
+      <div class="profile-page-badge"><span class="badge ${getBadgeClass(u.looking_for)}">${u.looking_for}</span></div>
+      <div class="profile-page-section">
+        <div class="profile-page-section-title">Навыки</div>
+        <div class="skills-wrap">${skills}</div>
+      </div>
+      ${desc}
+      <button class="btn-contact-big" onclick="window.open('https://t.me/${u.contact.replace('@', '')}')">✉️ Написать в Telegram</button>
+    `;
+    showPage('user');
   }
 
   function toggleFilters() {
@@ -234,16 +323,6 @@
     else if (!isOpen) btn.classList.remove('has-filters');
   }
 
-  function getInitials(name) {
-    return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  }
-
-  function getBadgeClass(looking) {
-    if (looking === 'Хакатон') return 'hackathon';
-    if (looking === 'Стартап') return 'startup';
-    return 'case';
-  }
-
   function setFilter(type, value, btn) {
     activeFilters[type] = value;
     const row = btn.closest('.filters-row');
@@ -255,21 +334,11 @@
   function applyFilters() {
     const search = document.getElementById('search-input').value.toLowerCase();
     let filtered = allUsers;
-
-    if (activeFilters.project !== 'all')
-      filtered = filtered.filter(u => u.looking_for === activeFilters.project);
-    if (activeFilters.skill !== 'all')
-      filtered = filtered.filter(u => u.skills.toLowerCase().includes(activeFilters.skill.toLowerCase()));
-    if (activeFilters.university !== 'all')
-      filtered = filtered.filter(u => u.university && u.university.toLowerCase().includes(activeFilters.university.toLowerCase()));
-    if (activeFilters.year !== 'all')
-      filtered = filtered.filter(u => String(u.year) === activeFilters.year);
-    if (search)
-      filtered = filtered.filter(u =>
-        u.name.toLowerCase().includes(search) ||
-        (u.university && u.university.toLowerCase().includes(search))
-      );
-
+    if (activeFilters.project !== 'all') filtered = filtered.filter(u => u.looking_for === activeFilters.project);
+    if (activeFilters.skill !== 'all') filtered = filtered.filter(u => u.skills.toLowerCase().includes(activeFilters.skill.toLowerCase()));
+    if (activeFilters.university !== 'all') filtered = filtered.filter(u => u.university && u.university.toLowerCase().includes(activeFilters.university.toLowerCase()));
+    if (activeFilters.year !== 'all') filtered = filtered.filter(u => String(u.year) === activeFilters.year);
+    if (search) filtered = filtered.filter(u => u.name.toLowerCase().includes(search) || (u.university && u.university.toLowerCase().includes(search)));
     document.getElementById('results-count').textContent = `Найдено: ${filtered.length}`;
     renderCards(filtered);
   }
@@ -282,21 +351,24 @@
     }
     container.innerHTML = users.map((u, i) => {
       const ci = i % avatarColors.length;
-      const skills = u.skills.split(',').map(s => `<span class="skill">${s.trim()}</span>`).join('');
-      const desc = u.description ? `<div class="card-description">${u.description}</div>` : '';
+      const initials = getInitials(u.name);
+      const avatarHtml = u.photo_url ? `<img src="${u.photo_url}" alt="${initials}">` : initials;
+      const skillsPreview = u.skills.split(',').slice(0, 3).map(s => s.trim()).join(' · ');
+      const descPreview = u.description ? (u.description.length > 80 ? u.description.slice(0, 80) + '...' : u.description) : '';
+      const userData = encodeURIComponent(JSON.stringify(u));
       return `
-        <div class="card">
-          <div class="card-top">
-            <div class="avatar" style="background:${avatarColors[ci]};color:${textColors[ci]}">${getInitials(u.name)}</div>
-            <div>
-              <div class="card-name">${u.name}</div>
-              <div class="card-sub">${u.university ? u.university + ' · ' : ''}${u.faculty} · ${u.year} курс</div>
-            </div>
-            <span class="badge ${getBadgeClass(u.looking_for)}">${u.looking_for}</span>
+        <div class="card" onclick="openUserPage(JSON.parse(decodeURIComponent('${userData}')), ${i})">
+          <div class="avatar" style="background:${avatarColors[ci]};color:${textColors[ci]}">${avatarHtml}</div>
+          <div class="card-info">
+            <div class="card-name">${u.name}</div>
+            <div class="card-sub">${u.university ? u.university + ' · ' : ''}${u.faculty} · ${u.year} курс</div>
+            <div class="card-skills-preview">${skillsPreview}</div>
+            ${descPreview ? `<div class="card-desc-preview">${descPreview}</div>` : ''}
           </div>
-          <div class="skills">${skills}</div>
-          ${desc}
-          <button class="btn-contact" onclick="window.open('https://t.me/${u.contact.replace('@','')}')">Написать</button>
+          <div class="card-right">
+            <span class="badge ${getBadgeClass(u.looking_for)}">${u.looking_for}</span>
+            <span class="chevron">›</span>
+          </div>
         </div>`;
     }).join('');
   }
@@ -312,12 +384,15 @@
   }
 
   async function loadMyProfile() {
+    const avatarEl = document.getElementById('my-avatar');
+    if (tgPhoto) {
+      avatarEl.innerHTML = `<img src="${tgPhoto}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    }
     try {
       const res = await fetch(`/api/users/${userId}`);
       if (!res.ok) return;
       const u = await res.json();
       if (!u) return;
-
       document.getElementById('f-name').value = u.name || '';
       document.getElementById('f-university').value = u.university || '';
       document.getElementById('f-faculty').value = u.faculty || '';
@@ -326,17 +401,14 @@
       document.getElementById('f-description').value = u.description || '';
       document.getElementById('f-looking').value = u.looking_for || 'Хакатон';
       document.getElementById('btn-save').textContent = 'Обновить анкету ✓';
-
       const mySkills = u.skills ? u.skills.split(',').map(s => s.trim()) : [];
       document.querySelectorAll('.skill-btn').forEach(btn => {
-        if (mySkills.includes(btn.textContent)) btn.classList.add('selected');
+        btn.classList.toggle('selected', mySkills.includes(btn.textContent));
       });
     } catch {}
   }
 
-  function toggleSkill(btn) {
-    btn.classList.toggle('selected');
-  }
+  function toggleSkill(btn) { btn.classList.toggle('selected'); }
 
   async function saveProfile() {
     const name = document.getElementById('f-name').value.trim();
@@ -347,18 +419,15 @@
     const looking_for = document.getElementById('f-looking').value;
     const description = document.getElementById('f-description').value.trim();
     const skills = [...document.querySelectorAll('.skill-btn.selected')].map(b => b.textContent).join(', ');
-
     if (!name || !university || !faculty || !contact || !skills) {
       alert('Заполни все поля и выбери хотя бы один навык!');
       return;
     }
-
     const res = await fetch('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: userId, name, university, faculty, year: parseInt(year), skills, looking_for, contact, description })
     });
-
     if (res.ok) {
       alert('Анкета сохранена! 🎉');
       showPage('find');
