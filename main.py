@@ -33,9 +33,14 @@ async def init_db():
             year INTEGER,
             skills TEXT,
             looking_for TEXT,
-            contact TEXT
+            contact TEXT,
+            description TEXT
         )
     """)
+    try:
+        await conn.execute("ALTER TABLE users ADD COLUMN description TEXT")
+    except:
+        pass
     await conn.close()
 
 @app.on_event("startup")
@@ -51,13 +56,14 @@ class User(BaseModel):
     skills: str
     looking_for: str
     contact: str
+    description: str = ""
 
 @app.post("/api/users")
 async def save_user(user: User):
     conn = await get_db()
     await conn.execute("""
-        INSERT INTO users (user_id, name, university, faculty, year, skills, looking_for, contact)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO users (user_id, name, university, faculty, year, skills, looking_for, contact, description)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         ON CONFLICT (user_id) DO UPDATE SET
             name=EXCLUDED.name,
             university=EXCLUDED.university,
@@ -65,8 +71,9 @@ async def save_user(user: User):
             year=EXCLUDED.year,
             skills=EXCLUDED.skills,
             looking_for=EXCLUDED.looking_for,
-            contact=EXCLUDED.contact
-    """, user.user_id, user.name, user.university, user.faculty, user.year, user.skills, user.looking_for, user.contact)
+            contact=EXCLUDED.contact,
+            description=EXCLUDED.description
+    """, user.user_id, user.name, user.university, user.faculty, user.year, user.skills, user.looking_for, user.contact, user.description)
     await conn.close()
     return {"status": "ok"}
 
@@ -79,5 +86,14 @@ async def get_users(looking_for: str = None):
         rows = await conn.fetch("SELECT * FROM users")
     await conn.close()
     return [dict(row) for row in rows]
+
+@app.get("/api/users/{user_id}")
+async def get_user(user_id: int):
+    conn = await get_db()
+    row = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", user_id)
+    await conn.close()
+    if row:
+        return dict(row)
+    return None
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
