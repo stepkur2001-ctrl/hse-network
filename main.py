@@ -34,13 +34,15 @@ async def init_db():
             skills TEXT,
             looking_for TEXT,
             contact TEXT,
-            description TEXT
+            description TEXT,
+            photo_url TEXT
         )
     """)
-    try:
-        await conn.execute("ALTER TABLE users ADD COLUMN description TEXT")
-    except:
-        pass
+    for col in ["description", "photo_url"]:
+        try:
+            await conn.execute(f"ALTER TABLE users ADD COLUMN {col} TEXT")
+        except:
+            pass
     await conn.close()
 
 @app.on_event("startup")
@@ -57,13 +59,14 @@ class User(BaseModel):
     looking_for: str
     contact: str
     description: str = ""
+    photo_url: str = ""
 
 @app.post("/api/users")
 async def save_user(user: User):
     conn = await get_db()
     await conn.execute("""
-        INSERT INTO users (user_id, name, university, faculty, year, skills, looking_for, contact, description)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        INSERT INTO users (user_id, name, university, faculty, year, skills, looking_for, contact, description, photo_url)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         ON CONFLICT (user_id) DO UPDATE SET
             name=EXCLUDED.name,
             university=EXCLUDED.university,
@@ -72,8 +75,9 @@ async def save_user(user: User):
             skills=EXCLUDED.skills,
             looking_for=EXCLUDED.looking_for,
             contact=EXCLUDED.contact,
-            description=EXCLUDED.description
-    """, user.user_id, user.name, user.university, user.faculty, user.year, user.skills, user.looking_for, user.contact, user.description)
+            description=EXCLUDED.description,
+            photo_url=EXCLUDED.photo_url
+    """, user.user_id, user.name, user.university, user.faculty, user.year, user.skills, user.looking_for, user.contact, user.description, user.photo_url)
     await conn.close()
     return {"status": "ok"}
 

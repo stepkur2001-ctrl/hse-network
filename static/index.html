@@ -426,7 +426,7 @@
     const res = await fetch('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: userId, name, university, faculty, year: parseInt(year), skills, looking_for, contact, description })
+      body: JSON.stringify({ user_id: userId, name, university, faculty, year: parseInt(year), skills, looking_for, contact, description, photo_url: tgPhoto || '' })
     });
     if (res.ok) {
       alert('Анкета сохранена! 🎉');
