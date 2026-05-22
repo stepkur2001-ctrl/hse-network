@@ -22,6 +22,7 @@ async def init_db():
             CREATE TABLE IF NOT EXISTS users (
                 user_id INTEGER PRIMARY KEY,
                 name TEXT,
+                university TEXT,
                 faculty TEXT,
                 year INTEGER,
                 skills TEXT,
@@ -29,6 +30,10 @@ async def init_db():
                 contact TEXT
             )
         """)
+        try:
+            await db.execute("ALTER TABLE users ADD COLUMN university TEXT")
+        except:
+            pass
         await db.commit()
 
 @app.on_event("startup")
@@ -38,6 +43,7 @@ async def startup():
 class User(BaseModel):
     user_id: int
     name: str
+    university: str
     faculty: str
     year: int
     skills: str
@@ -49,9 +55,9 @@ async def save_user(user: User):
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute("""
             INSERT OR REPLACE INTO users 
-            (user_id, name, faculty, year, skills, looking_for, contact)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (user.user_id, user.name, user.faculty, user.year, user.skills, user.looking_for, user.contact))
+            (user_id, name, university, faculty, year, skills, looking_for, contact)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (user.user_id, user.name, user.university, user.faculty, user.year, user.skills, user.looking_for, user.contact))
         await db.commit()
     return {"status": "ok"}
 

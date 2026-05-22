@@ -13,10 +13,6 @@
     .header h1 { font-size: 20px; font-weight: 600; }
     .header p { font-size: 13px; opacity: 0.75; margin-top: 2px; }
 
-    .tabs { display: flex; gap: 8px; padding: 12px; background: white; border-bottom: 1px solid #eee; }
-    .tab { flex: 1; padding: 8px; text-align: center; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: #f0f0f0; color: #666; }
-    .tab.active { background: #5B2D8E; color: white; }
-
     .filters { display: flex; gap: 6px; padding: 10px 12px; overflow-x: auto; background: white; }
     .filter { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #ddd; background: white; color: #666; white-space: nowrap; }
     .filter.active { background: #EDE7F6; color: #5B2D8E; border-color: #5B2D8E; }
@@ -80,6 +76,10 @@
     <div class="form-group">
       <label>Имя и фамилия</label>
       <input id="f-name" type="text" placeholder="Алексей Куликов">
+    </div>
+    <div class="form-group">
+      <label>Университет</label>
+      <input id="f-university" type="text" placeholder="ВШЭ">
     </div>
     <div class="form-group">
       <label>Факультет</label>
@@ -155,8 +155,8 @@
     return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   }
 
-  const avatarColors = ['#EDE7F6', '#FCE4EC', '#EDE7F6', '#E8F5E9', '#FFF3E0'];
-  const textColors = ['#5B2D8E', '#C2185B', '#5B2D8E', '#2E7D32', '#E65100'];
+  const avatarColors = ['#EDE7F6', '#FCE4EC', '#E3F2FD', '#E8F5E9', '#FFF3E0'];
+  const textColors = ['#5B2D8E', '#C2185B', '#1565C0', '#2E7D32', '#E65100'];
 
   function getBadgeClass(looking) {
     if (looking === 'Хакатон') return 'hackathon';
@@ -179,7 +179,7 @@
             <div class="avatar" style="background:${avatarColors[ci]};color:${textColors[ci]}">${getInitials(u.name)}</div>
             <div>
               <div class="card-name">${u.name}</div>
-              <div class="card-sub">${u.faculty} · ${u.year} курс</div>
+              <div class="card-sub">${u.university ? u.university + ' · ' : ''}${u.faculty} · ${u.year} курс</div>
             </div>
             <span class="badge ${getBadgeClass(u.looking_for)}">${u.looking_for}</span>
           </div>
@@ -213,13 +213,14 @@
 
   async function saveProfile() {
     const name = document.getElementById('f-name').value.trim();
+    const university = document.getElementById('f-university').value.trim();
     const faculty = document.getElementById('f-faculty').value.trim();
     const year = document.getElementById('f-year').value;
     const contact = document.getElementById('f-contact').value.trim();
     const looking_for = document.getElementById('f-looking').value;
     const skills = [...document.querySelectorAll('.skill-btn.selected')].map(b => b.textContent).join(', ');
 
-    if (!name || !faculty || !contact || !skills) {
+    if (!name || !university || !faculty || !contact || !skills) {
       alert('Заполни все поля и выбери хотя бы один навык!');
       return;
     }
@@ -227,7 +228,7 @@
     const res = await fetch('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: userId, name, faculty, year: parseInt(year), skills, looking_for, contact })
+      body: JSON.stringify({ user_id: userId, name, university, faculty, year: parseInt(year), skills, looking_for, contact })
     });
 
     if (res.ok) {
