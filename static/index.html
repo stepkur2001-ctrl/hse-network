@@ -13,14 +13,21 @@
     .header h1 { font-size: 20px; font-weight: 600; }
     .header p { font-size: 13px; opacity: 0.75; margin-top: 2px; }
 
-    .filters-section { background: white; border-bottom: 1px solid #eee; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
-    .filters-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+    .search-bar { display: flex; gap: 8px; padding: 10px 12px; background: white; border-bottom: 1px solid #eee; }
+    .search-bar input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: #f9f9f9; }
+    .filter-toggle { background: #5B2D8E; color: white; border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .filter-toggle.has-filters { background: #4a1f7a; }
+
+    .filters-panel { background: white; border-bottom: 1px solid #eee; padding: 12px; display: none; flex-direction: column; gap: 12px; }
+    .filters-panel.open { display: flex; }
+    .filter-group { display: flex; flex-direction: column; gap: 6px; }
+    .filter-label { font-size: 11px; color: #aaa; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .filters-row { display: flex; gap: 6px; flex-wrap: wrap; }
     .filter { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #ddd; background: white; color: #666; white-space: nowrap; }
     .filter.active { background: #EDE7F6; color: #5B2D8E; border-color: #5B2D8E; }
-    .filter-label { font-size: 11px; color: #aaa; font-weight: 500; padding-left: 2px; }
+    .filters-apply { width: 100%; background: #5B2D8E; color: white; border: none; border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 4px; }
 
-    .search-box { padding: 10px 12px; background: white; border-bottom: 1px solid #eee; }
-    .search-box input { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: #f9f9f9; }
+    .results-count { font-size: 12px; color: #aaa; padding: 8px 12px 0; }
 
     .cards { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
     .card { background: white; border-radius: 12px; border: 1px solid #eee; padding: 14px; }
@@ -37,7 +44,7 @@
     .btn-contact { width: 100%; background: #5B2D8E; color: white; border: none; border-radius: 8px; padding: 9px; font-size: 13px; font-weight: 600; cursor: pointer; }
     .btn-contact:active { opacity: 0.85; }
 
-    .results-count { font-size: 12px; color: #aaa; padding: 8px 12px 0; }
+    .empty { text-align: center; padding: 40px 20px; color: #aaa; font-size: 14px; }
 
     .form-wrap { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
     .form-group label { display: block; font-size: 13px; font-weight: 500; color: #555; margin-bottom: 6px; }
@@ -46,8 +53,6 @@
     .skill-btn { padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; background: white; cursor: pointer; text-align: center; }
     .skill-btn.selected { background: #EDE7F6; border-color: #5B2D8E; color: #5B2D8E; font-weight: 500; }
     .btn-save { width: 100%; background: #5B2D8E; color: white; border: none; border-radius: 8px; padding: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 4px; }
-
-    .empty { text-align: center; padding: 40px 20px; color: #aaa; font-size: 14px; }
 
     .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #eee; }
     .nav-item { flex: 1; padding: 10px; text-align: center; cursor: pointer; }
@@ -67,39 +72,62 @@
 </div>
 
 <div id="page-find" class="page active">
-  <div class="filters-section">
-    <div class="filter-label">Тип проекта</div>
-    <div class="filters-row">
-      <button class="filter active" onclick="setFilter('project', 'all', this)">Все</button>
-      <button class="filter" onclick="setFilter('project', 'Хакатон', this)">Хакатон</button>
-      <button class="filter" onclick="setFilter('project', 'Стартап', this)">Стартап</button>
-      <button class="filter" onclick="setFilter('project', 'Кейс-чемпионат', this)">Кейс-чемп</button>
-    </div>
-    <div class="filter-label">Навыки</div>
-    <div class="filters-row">
-      <button class="filter active" onclick="setFilter('skill', 'all', this)">Все</button>
-      <button class="filter" onclick="setFilter('skill', 'Python', this)">Python</button>
-      <button class="filter" onclick="setFilter('skill', 'Design', this)">Design</button>
-      <button class="filter" onclick="setFilter('skill', 'ML/AI', this)">ML/AI</button>
-      <button class="filter" onclick="setFilter('skill', 'Marketing', this)">Marketing</button>
-      <button class="filter" onclick="setFilter('skill', 'Finance', this)">Finance</button>
-      <button class="filter" onclick="setFilter('skill', 'Management', this)">Management</button>
-      <button class="filter" onclick="setFilter('skill', 'Backend', this)">Backend</button>
-      <button class="filter" onclick="setFilter('skill', 'Frontend', this)">Frontend</button>
-    </div>
-    <div class="filter-label">Курс</div>
-    <div class="filters-row">
-      <button class="filter active" onclick="setFilter('year', 'all', this)">Все</button>
-      <button class="filter" onclick="setFilter('year', '1', this)">1 курс</button>
-      <button class="filter" onclick="setFilter('year', '2', this)">2 курс</button>
-      <button class="filter" onclick="setFilter('year', '3', this)">3 курс</button>
-      <button class="filter" onclick="setFilter('year', '4', this)">4 курс</button>
-      <button class="filter" onclick="setFilter('year', '5', this)">Маг</button>
-    </div>
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="🔍 Имя или университет..." oninput="applyFilters()">
+    <button class="filter-toggle" id="filter-btn" onclick="toggleFilters()">⚙️ Фильтры</button>
   </div>
-  <div class="search-box">
-    <input type="text" id="search-input" placeholder="🔍 Поиск по имени или университету..." oninput="applyFilters()">
+
+  <div class="filters-panel" id="filters-panel">
+    <div class="filter-group">
+      <div class="filter-label">Тип проекта</div>
+      <div class="filters-row">
+        <button class="filter active" onclick="setFilter('project', 'all', this)">Все</button>
+        <button class="filter" onclick="setFilter('project', 'Хакатон', this)">Хакатон</button>
+        <button class="filter" onclick="setFilter('project', 'Стартап', this)">Стартап</button>
+        <button class="filter" onclick="setFilter('project', 'Кейс-чемпионат', this)">Кейс-чемп</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Навыки</div>
+      <div class="filters-row">
+        <button class="filter active" onclick="setFilter('skill', 'all', this)">Все</button>
+        <button class="filter" onclick="setFilter('skill', 'Python', this)">Python</button>
+        <button class="filter" onclick="setFilter('skill', 'Design', this)">Design</button>
+        <button class="filter" onclick="setFilter('skill', 'ML/AI', this)">ML/AI</button>
+        <button class="filter" onclick="setFilter('skill', 'Marketing', this)">Marketing</button>
+        <button class="filter" onclick="setFilter('skill', 'Finance', this)">Finance</button>
+        <button class="filter" onclick="setFilter('skill', 'Management', this)">Management</button>
+        <button class="filter" onclick="setFilter('skill', 'Backend', this)">Backend</button>
+        <button class="filter" onclick="setFilter('skill', 'Frontend', this)">Frontend</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Университет</div>
+      <div class="filters-row">
+        <button class="filter active" onclick="setFilter('university', 'all', this)">Все</button>
+        <button class="filter" onclick="setFilter('university', 'ВШЭ', this)">ВШЭ</button>
+        <button class="filter" onclick="setFilter('university', 'ИТМО', this)">ИТМО</button>
+        <button class="filter" onclick="setFilter('university', 'МГУ', this)">МГУ</button>
+        <button class="filter" onclick="setFilter('university', 'МФТИ', this)">МФТИ</button>
+        <button class="filter" onclick="setFilter('university', 'РАНХиГС', this)">РАНХиГС</button>
+        <button class="filter" onclick="setFilter('university', 'СПбГУ', this)">СПбГУ</button>
+        <button class="filter" onclick="setFilter('university', 'СПбГЭУ', this)">СПбГЭУ</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Курс</div>
+      <div class="filters-row">
+        <button class="filter active" onclick="setFilter('year', 'all', this)">Все</button>
+        <button class="filter" onclick="setFilter('year', '1', this)">1 курс</button>
+        <button class="filter" onclick="setFilter('year', '2', this)">2 курс</button>
+        <button class="filter" onclick="setFilter('year', '3', this)">3 курс</button>
+        <button class="filter" onclick="setFilter('year', '4', this)">4 курс</button>
+        <button class="filter" onclick="setFilter('year', '5', this)">Маг</button>
+      </div>
+    </div>
+    <button class="filters-apply" onclick="toggleFilters()">Применить ✓</button>
   </div>
+
   <div class="results-count" id="results-count"></div>
   <div class="cards" id="cards-container">
     <div class="empty">Загружаем анкеты...</div>
@@ -176,7 +204,7 @@
   const userId = tg?.initDataUnsafe?.user?.id || Math.floor(Math.random() * 100000);
 
   let allUsers = [];
-  let activeFilters = { project: 'all', skill: 'all', year: 'all' };
+  let activeFilters = { project: 'all', skill: 'all', year: 'all', university: 'all' };
 
   const avatarColors = ['#EDE7F6', '#FCE4EC', '#E3F2FD', '#E8F5E9', '#FFF3E0'];
   const textColors = ['#5B2D8E', '#C2185B', '#1565C0', '#2E7D32', '#E65100'];
@@ -186,6 +214,17 @@
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('page-' + name).classList.add('active');
     document.getElementById('nav-' + name).classList.add('active');
+  }
+
+  function toggleFilters() {
+    const panel = document.getElementById('filters-panel');
+    const btn = document.getElementById('filter-btn');
+    panel.classList.toggle('open');
+    const isOpen = panel.classList.contains('open');
+    btn.textContent = isOpen ? '✕ Закрыть' : '⚙️ Фильтры';
+    const hasActive = Object.values(activeFilters).some(v => v !== 'all');
+    if (!isOpen && hasActive) btn.classList.add('has-filters');
+    else if (!isOpen) btn.classList.remove('has-filters');
   }
 
   function getInitials(name) {
@@ -215,6 +254,9 @@
 
     if (activeFilters.skill !== 'all')
       filtered = filtered.filter(u => u.skills.toLowerCase().includes(activeFilters.skill.toLowerCase()));
+
+    if (activeFilters.university !== 'all')
+      filtered = filtered.filter(u => u.university && u.university.toLowerCase().includes(activeFilters.university.toLowerCase()));
 
     if (activeFilters.year !== 'all')
       filtered = filtered.filter(u => String(u.year) === activeFilters.year);
