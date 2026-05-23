@@ -4,13 +4,19 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import asyncpg
 import os
+import asyncio
 from dotenv import load_dotenv
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters import Command
 
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 app = FastAPI()
+bot = Bot(token=BOT_TOKEN)
+dp = Dispatcher()
 
 app.add_middleware(
     CORSMiddleware,
@@ -45,9 +51,23 @@ async def init_db():
             pass
     await conn.close()
 
+@dp.message(Command("start"))
+async def cmd_start(message: types.Message):
+    await message.answer(
+        "👋 Привет! Я HSE Network — помогаю студентам находить тиммейтов для хакатонов, стартапов и кейс-чемпионатов!\n\n"
+        "🔍 Найди команду или участника прямо сейчас 👇",
+        reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[
+            [types.InlineKeyboardButton(
+                text="🚀 Открыть HSE Network",
+                web_app=types.WebAppInfo(url="https://hse-network.onrender.com")
+            )]
+        ])
+    )
+
 @app.on_event("startup")
 async def startup():
     await init_db()
+    asyncio.create_task(dp.start_polling(bot))
 
 class User(BaseModel):
     user_id: int
