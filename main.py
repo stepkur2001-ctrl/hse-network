@@ -41,15 +41,21 @@ async def init_db():
             looking_for TEXT,
             contact TEXT,
             description TEXT,
-            photo_url TEXT
+            photo_url TEXT,
+            role TEXT
         )
     """)
-    for col in ["description", "photo_url"]:
+    for col in ["description", "photo_url", "role"]:
         try:
             await conn.execute(f"ALTER TABLE users ADD COLUMN {col} TEXT")
         except:
             pass
     await conn.close()
+
+@app.on_event("startup")
+async def startup():
+    await init_db()
+    asyncio.create_task(dp.start_polling(bot))
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
@@ -64,11 +70,6 @@ async def cmd_start(message: types.Message):
         ])
     )
 
-@app.on_event("startup")
-async def startup():
-    await init_db()
-    asyncio.create_task(dp.start_polling(bot))
-
 class User(BaseModel):
     user_id: int
     name: str
@@ -80,13 +81,14 @@ class User(BaseModel):
     contact: str
     description: str = ""
     photo_url: str = ""
+    role: str = ""
 
 @app.post("/api/users")
 async def save_user(user: User):
     conn = await get_db()
     await conn.execute("""
-        INSERT INTO users (user_id, name, university, faculty, year, skills, looking_for, contact, description, photo_url)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        INSERT INTO users (user_id, name, university, faculty, year, skills, looking_for, contact, description, photo_url, role)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
         ON CONFLICT (user_id) DO UPDATE SET
             name=EXCLUDED.name,
             university=EXCLUDED.university,
@@ -96,8 +98,9 @@ async def save_user(user: User):
             looking_for=EXCLUDED.looking_for,
             contact=EXCLUDED.contact,
             description=EXCLUDED.description,
-            photo_url=EXCLUDED.photo_url
-    """, user.user_id, user.name, user.university, user.faculty, user.year, user.skills, user.looking_for, user.contact, user.description, user.photo_url)
+            photo_url=EXCLUDED.photo_url,
+            role=EXCLUDED.role
+    """, user.user_id, user.name, user.university, user.faculty, user.year, user.skills, user.looking_for, user.contact, user.description, user.photo_url, user.role)
     await conn.close()
     return {"status": "ok"}
 

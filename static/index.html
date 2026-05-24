@@ -46,6 +46,10 @@
     .badge.hackathon { background: #EDE7F6; color: #5B2D8E; }
     .badge.startup { background: #E8F5E9; color: #2E7D32; }
     .badge.case { background: #FFF3E0; color: #E65100; }
+    .badge.other { background: #F3F4F6; color: #6B7280; }
+    .role-badge { font-size: 10px; padding: 2px 7px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+    .role-badge.has-project { background: #EDE7F6; color: #5B2D8E; }
+    .role-badge.join-project { background: #E8F5E9; color: #2E7D32; }
     .chevron { font-size: 14px; color: #ccc; margin-top: 2px; }
 
     .empty { text-align: center; padding: 40px 20px; color: #aaa; font-size: 14px; }
@@ -56,7 +60,7 @@
     .profile-page-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     .profile-page-name { text-align: center; font-size: 20px; font-weight: 700; padding: 0 16px; }
     .profile-page-sub { text-align: center; font-size: 13px; color: #888; margin-top: 4px; padding: 0 16px; }
-    .profile-page-badge { display: flex; justify-content: center; margin: 10px 0; }
+    .profile-page-badges { display: flex; justify-content: center; gap: 6px; margin: 10px 0; flex-wrap: wrap; }
     .profile-page-section { padding: 16px; border-top: 1px solid #f0f0f0; }
     .profile-page-section-title { font-size: 11px; color: #aaa; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
     .skills-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -72,6 +76,9 @@
     .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .skill-btn { padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; background: white; cursor: pointer; text-align: center; }
     .skill-btn.selected { background: #EDE7F6; border-color: #5B2D8E; color: #5B2D8E; font-weight: 500; }
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .role-btn { padding: 10px 8px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; background: white; cursor: pointer; text-align: center; line-height: 1.4; }
+    .role-btn.selected { background: #EDE7F6; border-color: #5B2D8E; color: #5B2D8E; font-weight: 500; }
     .btn-save { width: 100%; background: #5B2D8E; color: white; border: none; border-radius: 8px; padding: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 4px; }
     .my-avatar-wrap { display: flex; align-items: center; gap: 12px; }
     .my-avatar { width: 56px; height: 56px; border-radius: 50%; background: #EDE7F6; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 18px; color: #5B2D8E; overflow: hidden; flex-shrink: 0; }
@@ -104,6 +111,14 @@
     <button class="filter-toggle" id="filter-btn" onclick="toggleFilters()">⚙️ Фильтры</button>
   </div>
   <div class="filters-panel" id="filters-panel">
+    <div class="filter-group">
+      <div class="filter-label">Роль</div>
+      <div class="filters-row">
+        <button class="filter active" onclick="setFilter('role', 'all', this)">Все</button>
+        <button class="filter" onclick="setFilter('role', 'has-project', this)">🚀 Есть проект</button>
+        <button class="filter" onclick="setFilter('role', 'join-project', this)">🙋 Ищу проект</button>
+      </div>
+    </div>
     <div class="filter-group">
       <div class="filter-label">Тип проекта</div>
       <div class="filters-row">
@@ -193,6 +208,13 @@
       </select>
     </div>
     <div class="form-group">
+      <label>Моя роль</label>
+      <div class="role-grid">
+        <button class="role-btn" id="role-has" onclick="selectRole('has-project')">🚀 Есть проект<br>ищу команду</button>
+        <button class="role-btn" id="role-join" onclick="selectRole('join-project')">🙋 Нет проекта<br>хочу присоединиться</button>
+      </div>
+    </div>
+    <div class="form-group">
       <label>Навыки</label>
       <div class="skills-grid">
         <button class="skill-btn" onclick="toggleSkill(this)">Python</button>
@@ -216,7 +238,7 @@
     </div>
     <div class="form-group">
       <label>О себе и проекте</label>
-      <textarea id="f-description" placeholder="Расскажи о себе, своём опыте или проекте..."></textarea>
+      <textarea id="f-description" placeholder="Есть идея — расскажи о проекте и кого ищешь. Нет проекта — расскажи о себе и своих навыках 🙌"></textarea>
     </div>
     <div class="form-group">
       <label>Telegram username</label>
@@ -245,7 +267,8 @@
 
   let allUsers = [];
   let prevPage = 'find';
-  let activeFilters = { project: 'all', skill: 'all', year: 'all', university: 'all' };
+  let selectedRole = '';
+  let activeFilters = { role: 'all', project: 'all', skill: 'all', year: 'all', university: 'all' };
 
   const avatarColors = ['#EDE7F6', '#FCE4EC', '#E3F2FD', '#E8F5E9', '#FFF3E0'];
   const textColors = ['#5B2D8E', '#C2185B', '#1565C0', '#2E7D32', '#E65100'];
@@ -257,7 +280,26 @@
   function getBadgeClass(looking) {
     if (looking === 'Хакатон') return 'hackathon';
     if (looking === 'Стартап') return 'startup';
-    return 'case';
+    if (looking === 'Кейс-чемпионат') return 'case';
+    return 'other';
+  }
+
+  function getRoleLabel(role) {
+    if (role === 'has-project') return '🚀 Есть проект';
+    if (role === 'join-project') return '🙋 Ищу проект';
+    return '';
+  }
+
+  function getRoleBadgeClass(role) {
+    if (role === 'has-project') return 'has-project';
+    if (role === 'join-project') return 'join-project';
+    return '';
+  }
+
+  function selectRole(role) {
+    selectedRole = role;
+    document.getElementById('role-has').classList.toggle('selected', role === 'has-project');
+    document.getElementById('role-join').classList.toggle('selected', role === 'join-project');
   }
 
   function showPage(name) {
@@ -287,10 +329,10 @@
   function openUserPage(u, colorIndex) {
     const ci = colorIndex % avatarColors.length;
     const initials = getInitials(u.name);
-    const avatarHtml = u.photo_url
-      ? `<img src="${u.photo_url}" alt="${initials}">`
-      : initials;
+    const avatarHtml = u.photo_url ? `<img src="${u.photo_url}" alt="${initials}">` : initials;
     const skills = u.skills.split(',').map(s => `<span class="skill">${s.trim()}</span>`).join('');
+    const roleLabel = getRoleLabel(u.role);
+    const roleBadgeClass = getRoleBadgeClass(u.role);
     const desc = u.description
       ? `<div class="profile-page-section">
            <div class="profile-page-section-title">О себе и проекте</div>
@@ -303,7 +345,10 @@
       </div>
       <div class="profile-page-name">${u.name}</div>
       <div class="profile-page-sub">${u.university ? u.university + ' · ' : ''}${u.faculty} · ${u.year} курс</div>
-      <div class="profile-page-badge"><span class="badge ${getBadgeClass(u.looking_for)}">${u.looking_for}</span></div>
+      <div class="profile-page-badges">
+        <span class="badge ${getBadgeClass(u.looking_for)}">${u.looking_for}</span>
+        ${roleLabel ? `<span class="role-badge ${roleBadgeClass}">${roleLabel}</span>` : ''}
+      </div>
       <div class="profile-page-section">
         <div class="profile-page-section-title">Навыки</div>
         <div class="skills-wrap">${skills}</div>
@@ -336,6 +381,7 @@
   function applyFilters() {
     const search = document.getElementById('search-input').value.toLowerCase();
     let filtered = allUsers;
+    if (activeFilters.role !== 'all') filtered = filtered.filter(u => u.role === activeFilters.role);
     if (activeFilters.project !== 'all') filtered = filtered.filter(u => u.looking_for === activeFilters.project);
     if (activeFilters.skill !== 'all') filtered = filtered.filter(u => u.skills.toLowerCase().includes(activeFilters.skill.toLowerCase()));
     if (activeFilters.university !== 'all') filtered = filtered.filter(u => u.university && u.university.toLowerCase().includes(activeFilters.university.toLowerCase()));
@@ -357,6 +403,8 @@
       const avatarHtml = u.photo_url ? `<img src="${u.photo_url}" alt="${initials}">` : initials;
       const skillsPreview = u.skills.split(',').slice(0, 3).map(s => s.trim()).join(' · ');
       const descPreview = u.description ? (u.description.length > 80 ? u.description.slice(0, 80) + '...' : u.description) : '';
+      const roleLabel = getRoleLabel(u.role);
+      const roleBadgeClass = getRoleBadgeClass(u.role);
       const userData = encodeURIComponent(JSON.stringify(u));
       return `
         <div class="card" onclick="openUserPage(JSON.parse(decodeURIComponent('${userData}')), ${i})">
@@ -369,6 +417,7 @@
           </div>
           <div class="card-right">
             <span class="badge ${getBadgeClass(u.looking_for)}">${u.looking_for}</span>
+            ${roleLabel ? `<span class="role-badge ${roleBadgeClass}">${roleLabel}</span>` : ''}
             <span class="chevron">›</span>
           </div>
         </div>`;
@@ -403,6 +452,7 @@
       document.getElementById('f-description').value = u.description || '';
       document.getElementById('f-looking').value = u.looking_for || 'Хакатон';
       document.getElementById('btn-save').textContent = 'Обновить анкету ✓';
+      if (u.role) selectRole(u.role);
       const mySkills = u.skills ? u.skills.split(',').map(s => s.trim()) : [];
       document.querySelectorAll('.skill-btn').forEach(btn => {
         btn.classList.toggle('selected', mySkills.includes(btn.textContent));
@@ -428,7 +478,7 @@
     const res = await fetch('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: userId, name, university, faculty, year: parseInt(year), skills, looking_for, contact, description, photo_url: tgPhoto || '' })
+      body: JSON.stringify({ user_id: userId, name, university, faculty, year: parseInt(year), skills, looking_for, contact, description, photo_url: tgPhoto || '', role: selectedRole })
     });
     if (res.ok) {
       alert('Анкета сохранена! 🎉');
