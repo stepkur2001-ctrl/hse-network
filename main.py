@@ -45,6 +45,14 @@ async def init_db():
             role TEXT
         )
     """)
+    await conn.execute("""
+        CREATE TABLE IF NOT EXISTS likes (
+            id SERIAL PRIMARY KEY,
+            from_user_id BIGINT,
+            to_user_id BIGINT,
+            UNIQUE(from_user_id, to_user_id)
+        )
+    """)
     for col in ["description", "photo_url", "role"]:
         try:
             await conn.execute(f"ALTER TABLE users ADD COLUMN {col} TEXT")
@@ -83,6 +91,10 @@ class User(BaseModel):
     photo_url: str = ""
     role: str = ""
 
+class Like(BaseModel):
+    from_user_id: int
+    to_user_id: int
+
 @app.post("/api/users")
 async def save_user(user: User):
     conn = await get_db()
@@ -103,6 +115,48 @@ async def save_user(user: User):
     """, user.user_id, user.name, user.university, user.faculty, user.year, user.skills, user.looking_for, user.contact, user.description, user.photo_url, user.role)
     await conn.close()
     return {"status": "ok"}
+
+@app.post("/api/likes")
+async def add_like(like: Like):
+    conn = await get_db()
+    from_user = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", like.from_user_id)
+    if not from_user:
+        await conn.close()
+        return {"status": "no_profile"}
+    try:
+        await conn.execute("""
+            INSERT INTO likes (from_user_id, to_user_id) VALUES ($1, $2)
+        """, like.from_user_id, like.to_user_id)
+        if like.from_user_id != like.to_user_id:
+            to_user = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", like.to_user_id)
+            if to_user:
+                try:
+                    await bot.send_message(
+                        like.to_user_id,
+                        f"❤️ {from_user['name']} лайкнул твою анкету!\n\nПосмотри профиль: @{from_user['contact'].replace('@', '')}"
+                    )
+                except:
+                    pass
+        await conn.close()
+        return {"status": "ok"}
+    except:
+        await conn.close()
+        return {"status": "already_liked"}
+
+@app.delete("/api/likes")
+async def remove_like(like: Like):
+    conn = await get_db()
+    await conn.execute("DELETE FROM likes WHERE from_user_id = $1 AND to_user_id = $2", like.from_user_id, like.to_user_id)
+    await conn.close()
+    return {"status": "ok"}
+
+@app.get("/api/likes/{user_id}")
+async def get_likes(user_id: int):
+    conn = await get_db()
+    count = await conn.fetchval("SELECT COUNT(*) FROM likes WHERE to_user_id = $1", user_id)
+    liked_by_me = await conn.fetch("SELECT to_user_id FROM likes WHERE from_user_id = $1", user_id)
+    await conn.close()
+    return {"count": count, "liked_by_me": [r["to_user_id"] for r in liked_by_me]}
 
 @app.get("/api/users")
 async def get_users(looking_for: str = None):
