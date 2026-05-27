@@ -50,7 +50,6 @@
     .role-badge { font-size: 10px; padding: 2px 7px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
     .role-badge.has-project { background: #EDE7F6; color: #5B2D8E; }
     .role-badge.join-project { background: #E8F5E9; color: #2E7D32; }
-    .card-likes { font-size: 11px; color: #aaa; }
     .card-like-btn { background: none; border: 1px solid #eee; border-radius: 20px; padding: 3px 8px; font-size: 11px; cursor: pointer; color: #aaa; }
     .card-like-btn.liked { color: #e74c3c; border-color: #e74c3c; background: #fff0f0; }
     .chevron { font-size: 14px; color: #ccc; margin-top: 2px; }
@@ -69,12 +68,10 @@
     .skills-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
     .skill { background: #f5f5f5; color: #555; font-size: 12px; padding: 4px 10px; border-radius: 20px; }
     .profile-page-description { font-size: 14px; color: #444; line-height: 1.6; }
-    .profile-actions { display: flex; gap: 10px; padding: 8px 16px 0; }
+    .profile-actions { display: flex; gap: 10px; padding: 8px 16px 16px; }
     .btn-contact-big { flex: 1; background: #5B2D8E; color: white; border: none; border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 600; cursor: pointer; }
     .btn-like-big { background: white; color: #e74c3c; border: 2px solid #e74c3c; border-radius: 10px; padding: 14px 18px; font-size: 18px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; white-space: nowrap; }
     .btn-like-big.liked { background: #e74c3c; color: white; }
-    .btn-contact-big:active { opacity: 0.85; }
-    .btn-like-big:active { opacity: 0.85; }
 
     .form-wrap { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
     .form-group label { display: block; font-size: 13px; font-weight: 500; color: #555; margin-bottom: 6px; }
@@ -334,19 +331,25 @@
 
   function goBack() { showPage(prevPage); }
 
-  async function toggleLike(toUserId, currentCount, btn) {
+  async function handleCardLike(event, toUserId) {
+    event.stopPropagation();
+    const btn = document.getElementById('card-like-' + toUserId);
     const isLiked = myLikes.includes(toUserId);
+    const currentCount = parseInt(btn.dataset.count) || 0;
+
     if (isLiked) {
-      await fetch('/api/likes', {
+      const res = await fetch('/api/likes', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ from_user_id: userId, to_user_id: toUserId })
       });
-      myLikes = myLikes.filter(id => id !== toUserId);
-      const newCount = currentCount - 1;
-      btn.innerHTML = `❤️ ${newCount}`;
-      btn.classList.remove('liked');
-      btn.onclick = () => toggleLike(toUserId, newCount, btn);
+      if (res.ok) {
+        myLikes = myLikes.filter(id => id !== toUserId);
+        const newCount = currentCount - 1;
+        btn.dataset.count = newCount;
+        btn.textContent = newCount > 0 ? '❤️ ' + newCount : '❤️';
+        btn.classList.remove('liked');
+      }
     } else {
       const res = await fetch('/api/likes', {
         method: 'POST',
@@ -358,15 +361,17 @@
         alert('Сначала заполни свою анкету чтобы ставить лайки!');
         return;
       }
-      myLikes.push(toUserId);
-      const newCount = currentCount + 1;
-      btn.innerHTML = `❤️ ${newCount}`;
-      btn.classList.add('liked');
-      btn.onclick = () => toggleLike(toUserId, newCount, btn);
+      if (data.status === 'ok') {
+        myLikes.push(toUserId);
+        const newCount = currentCount + 1;
+        btn.dataset.count = newCount;
+        btn.textContent = '❤️ ' + newCount;
+        btn.classList.add('liked');
+      }
     }
   }
 
-  async function openUserPage(u, colorIndex, likesCount) {
+  async function openUserPage(u, colorIndex) {
     const ci = colorIndex % avatarColors.length;
     const initials = getInitials(u.name);
     const avatarHtml = u.photo_url ? `<img src="${u.photo_url}" alt="${initials}">` : initials;
@@ -374,6 +379,7 @@
     const roleLabel = getRoleLabel(u.role);
     const roleBadgeClass = getRoleBadgeClass(u.role);
     const isLiked = myLikes.includes(u.user_id);
+    const likesCount = u.likes_count || 0;
     const desc = u.description
       ? `<div class="profile-page-section">
            <div class="profile-page-section-title">О себе и проекте</div>
@@ -397,12 +403,48 @@
       ${desc}
       <div class="profile-actions">
         <button class="btn-contact-big" onclick="window.open('https://t.me/${u.contact.replace('@', '')}')">✉️ Написать</button>
-        <button class="btn-like-big ${isLiked ? 'liked' : ''}" id="like-btn-${u.user_id}">❤️ ${likesCount}</button>
+        <button class="btn-like-big ${isLiked ? 'liked' : ''}" id="profile-like-btn" data-count="${likesCount}" onclick="handleProfileLike(${u.user_id}, this)">❤️ ${likesCount}</button>
       </div>
     `;
     showPage('user');
-    const likeBtn = document.getElementById(`like-btn-${u.user_id}`);
-    likeBtn.onclick = () => toggleLike(u.user_id, parseInt(likeBtn.textContent.replace('❤️ ', '')), likeBtn);
+  }
+
+  async function handleProfileLike(toUserId, btn) {
+    const isLiked = myLikes.includes(toUserId);
+    const currentCount = parseInt(btn.dataset.count) || 0;
+    if (isLiked) {
+      const res = await fetch('/api/likes', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from_user_id: userId, to_user_id: toUserId })
+      });
+      if (res.ok) {
+        myLikes = myLikes.filter(id => id !== toUserId);
+        const newCount = currentCount - 1;
+        btn.dataset.count = newCount;
+        btn.textContent = '❤️ ' + newCount;
+        btn.classList.remove('liked');
+        const cardBtn = document.getElementById('card-like-' + toUserId);
+        if (cardBtn) { cardBtn.dataset.count = newCount; cardBtn.textContent = newCount > 0 ? '❤️ ' + newCount : '❤️'; cardBtn.classList.remove('liked'); }
+      }
+    } else {
+      const res = await fetch('/api/likes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from_user_id: userId, to_user_id: toUserId })
+      });
+      const data = await res.json();
+      if (data.status === 'no_profile') { alert('Сначала заполни свою анкету!'); return; }
+      if (data.status === 'ok') {
+        myLikes.push(toUserId);
+        const newCount = currentCount + 1;
+        btn.dataset.count = newCount;
+        btn.textContent = '❤️ ' + newCount;
+        btn.classList.add('liked');
+        const cardBtn = document.getElementById('card-like-' + toUserId);
+        if (cardBtn) { cardBtn.dataset.count = newCount; cardBtn.textContent = '❤️ ' + newCount; cardBtn.classList.add('liked'); }
+      }
+    }
   }
 
   function toggleFilters() {
@@ -452,9 +494,10 @@
       const roleLabel = getRoleLabel(u.role);
       const roleBadgeClass = getRoleBadgeClass(u.role);
       const likesCount = u.likes_count || 0;
+      const isLiked = myLikes.includes(u.user_id);
       const userData = encodeURIComponent(JSON.stringify(u));
       return `
-        <div class="card" onclick="openUserPage(JSON.parse(decodeURIComponent('${userData}')), ${i}, ${likesCount})">
+        <div class="card" onclick="openUserPage(JSON.parse(decodeURIComponent('${userData}')), ${i})">
           <div class="avatar" style="background:${avatarColors[ci]};color:${textColors[ci]}">${avatarHtml}</div>
           <div class="card-info">
             <div class="card-name">${u.name}</div>
@@ -465,7 +508,7 @@
           <div class="card-right">
             <span class="badge ${getBadgeClass(u.looking_for)}">${u.looking_for}</span>
             ${roleLabel ? `<span class="role-badge ${roleBadgeClass}">${roleLabel}</span>` : ''}
-            <button class="card-like-btn ${myLikes.includes(u.user_id) ? 'liked' : ''}" id="card-like-${u.user_id}" onclick="event.stopPropagation(); handleCardLike(${u.user_id}, this)">❤️ ${likesCount}</button>
+            <button class="card-like-btn ${isLiked ? 'liked' : ''}" id="card-like-${u.user_id}" data-count="${likesCount}" onclick="handleCardLike(event, ${u.user_id})">${isLiked || likesCount > 0 ? '❤️ ' + likesCount : '❤️'}</button>
           </div>
         </div>`;
     }).join('');
@@ -480,7 +523,6 @@
       const users = await usersRes.json();
       const likesData = await likesRes.json();
       myLikes = likesData.liked_by_me || [];
-
       const likeCounts = await Promise.all(
         users.map(u => fetch(`/api/likes/${u.user_id}`).then(r => r.json()))
       );
