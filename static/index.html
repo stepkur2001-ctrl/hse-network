@@ -475,6 +475,7 @@
     if (activeFilters.university !== 'all') filtered = filtered.filter(u => u.university && u.university.toLowerCase().includes(activeFilters.university.toLowerCase()));
     if (activeFilters.year !== 'all') filtered = filtered.filter(u => String(u.year) === activeFilters.year);
     if (search) filtered = filtered.filter(u => u.name.toLowerCase().includes(search) || (u.university && u.university.toLowerCase().includes(search)));
+    filtered.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
     document.getElementById('results-count').textContent = `Найдено: ${filtered.length}`;
     renderCards(filtered);
   }
