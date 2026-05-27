@@ -60,11 +60,11 @@ async def startup():
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     await message.answer(
-        "👋 Привет! Я HSE Network — помогаю студентам находить тиммейтов для хакатонов, стартапов и кейс-чемпионатов!\n\n"
+        "👋 Привет! Я Network — помогаю студентам находить тиммейтов для хакатонов, стартапов и кейс-чемпионатов!\n\n"
         "🔍 Найди команду или участника прямо сейчас 👇",
         reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[
             [types.InlineKeyboardButton(
-                text="🚀 Открыть HSE Network",
+                text="🚀 Открыть Network",
                 web_app=types.WebAppInfo(url="https://hse-network.onrender.com")
             )]
         ])
