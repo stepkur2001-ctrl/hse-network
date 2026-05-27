@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HSE Network</title>
+  <title>Network</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -100,7 +100,7 @@
 <div class="header" id="main-header">
   <button class="header-back" id="header-back" onclick="goBack()">←</button>
   <div class="header-titles">
-    <h1 id="header-title">HSE Network</h1>
+    <h1 id="header-title">Network</h1>
     <p id="header-subtitle">Найди тиммейта для проекта</p>
   </div>
 </div>
@@ -316,7 +316,7 @@
     } else {
       backBtn.style.display = 'none';
       subtitle.style.display = 'block';
-      document.getElementById('header-title').textContent = 'HSE Network';
+      document.getElementById('header-title').textContent = 'Network';
       document.getElementById('bottom-nav').style.display = 'flex';
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       document.getElementById('nav-' + name).classList.add('active');
