@@ -71,8 +71,8 @@ async def shutdown():
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     await message.answer(
-        "👋 Привет! Я Network — помогаю студентам находить тиммейтов для хакатонов, стартапов и кейс-чемпионатов!\n\n"
-        "🔍 Найди команду или участника прямо сейчас 👇",
+        "👋 Привет! Я Network — платформа для студентов, выпускников и работодателей!\n\n"
+        "🔍 Найди тиммейта, проект или стажировку прямо сейчас 👇",
         reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[
             [types.InlineKeyboardButton(
                 text="🚀 Открыть Network",
